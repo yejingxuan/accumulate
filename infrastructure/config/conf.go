@@ -35,11 +35,8 @@ func InitByContent(content string) {
 }
 
 type CoreConfig struct {
-	General string
-	Log     Log
-	Server  Server
-	File    File
-	Nacos   Nacos
+	Log    Log
+	Server Server
 }
 
 // Log Config
@@ -55,23 +52,12 @@ type Log struct {
 
 // Server server config
 type Server struct {
-	Port                   int
-	GrpcPort               int
-	TaskRunnerServer       string
-	MaxHTTPTime            int64
-	DB                     db
-	MachineCode            int64
-	MaxCoroutineNum        int
-	UploadBasePath         string
-	FileStorePath          string
-	HostOpFilePath         string
-	ClearPackageCron       string
-	ClearPackageCronEnable bool
-	Env                    map[string]EnvConfig
-}
+	Port            int
+	MaxHTTPTime     int64
+	MaxCoroutineNum int
+	MachineCode     int64
 
-type EnvConfig struct {
-	Value string
+	DB db
 }
 
 type db struct {
@@ -81,29 +67,6 @@ type db struct {
 	MaxConn      int
 	MaxQueryTime Duration
 	LogMode      bool
-}
-
-type File struct {
-	OpFilePath         string
-	OpAdjunctPath      string
-	SvrFilePath        string
-	ImageFilePath      string
-	DockerFileTempPath string
-	ImageUrl           string
-	OpImageProject     string
-	ImageUserName      string
-	ImagePassWord      string
-	ImagePrefix        string
-	SvrPrefix          string
-}
-
-type Nacos struct {
-	IpAddr      string
-	Port        uint64
-	ContextPath string
-	NamespaceId string
-	DataId      string
-	Group       string
 }
 
 type Duration struct {

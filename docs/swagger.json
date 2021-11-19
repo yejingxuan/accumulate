@@ -1,0 +1,52 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "accumulate服务API接口",
+        "title": "accumulate服务API接口",
+        "contact": {},
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/accumulate/v1/exec/update/all": {
+            "post": {
+                "tags": [
+                    "任务执行"
+                ],
+                "summary": "更新全部数据",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":0,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/accumulate/v1/info/stock/{code}": {
+            "get": {
+                "tags": [
+                    "信息获取"
+                ],
+                "summary": "获取stock详细信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "stock-code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":0,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

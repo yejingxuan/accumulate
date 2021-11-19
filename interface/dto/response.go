@@ -1,4 +1,4 @@
-package response
+package dto
 
 import (
 	"github.com/gin-gonic/gin"
@@ -124,21 +124,4 @@ func JSONWithError(c *gin.Context, err error) {
 	c.JSON(200, resp)
 	c.Set("statuscode", Error)
 	return
-}
-
-type ImageLogRep struct {
-	BatchId    string `json:"batchId"`
-	Info       string `json:"info"` //日志信息
-	CreateTime string `json:"createTime"`
-}
-
-type MatchImageRep struct {
-	OpId      string `json:"opId"`      //算子id
-	BaseImage string `json:"imageName"` //镜像tag名称
-	Exist     bool   `json:"exist"`     //镜像是否存在
-}
-
-type QueryOpRep struct {
-	List  interface{} `json:"list"`
-	Total interface{} `json:"total"`
 }

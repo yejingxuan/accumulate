@@ -1,0 +1,33 @@
+info:
+  contact: {}
+  description: accumulate服务API接口
+  title: accumulate服务API接口
+  version: 1.0.0
+paths:
+  /accumulate/v1/exec/update/all:
+    post:
+      responses:
+        "200":
+          description: '{"code":0,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 更新全部数据
+      tags:
+      - 任务执行
+  /accumulate/v1/info/stock/{code}:
+    get:
+      parameters:
+      - description: stock-code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"code":0,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取stock详细信息
+      tags:
+      - 信息获取
+swagger: "2.0"

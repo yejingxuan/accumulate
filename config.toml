@@ -1,0 +1,23 @@
+[server]
+port = 16666
+maxhttptime = 1000
+maxCoroutineNum = 200
+# 分布式部署机器码
+machineCode = 666
+
+[server.db]
+drivename = "postgres"
+dsn = "postgres://postgres:bjsh@192.168.0.219:20010/operator_0406?sslmode=disable"
+maxidle = 10
+maxconn = 20
+maxquerytime = "10s"
+logMode = true
+
+[log]
+logpath = ""
+maxsize = 10
+compress = true
+maxage = 7 #day
+maxbackups = 10
+loglevel = "info"
+format = "text"
