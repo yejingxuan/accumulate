@@ -48,7 +48,8 @@ func Server() *cobra.Command {
 			// 初始化应用层实例
 			stockApp := application.NewStockApp(persisDB.StockRepo)
 
-			crawler.ExecXueQiuJob(persisDB.StockRepo)
+			xueQiuCrawler := crawler.NewXueQiuCrawler(persisDB.StockRepo)
+			go xueQiuCrawler.UpdateAllStockBaseData()
 
 			//初始化http接口
 			err = api.SetupHttpServer(stockApp)

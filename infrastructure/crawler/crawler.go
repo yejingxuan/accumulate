@@ -13,40 +13,48 @@ import (
 
 var (
 	xueQiuAllDataUrl = "https://xueqiu.com/service/v5/stock/screener/quote/list?page=%d&size=%d&order=desc&orderby=percent&order_by=percent&market=CN&type=sh_sz&_=%d"
-	pageNo           = 1
+	pageNo           = 24
 	pageSize         = 200
 	total            = 200
 	totalPage        = 1
+
+	xuqQiuKLineUrl = "https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=%s&begin=%d&period=day&type=before&count=%d&indicator=kline"
+	kLineCount = -90
 )
 
-func ExecXueQiuJob(stockRepo repository.StockRepo) error {
+type StockCrawlerInterface interface {
+	UpdateAllStockBaseData()
+	UpdateKLineData(code string) error
+}
+
+type xueQiuCrawler struct {
+	stockRepo repository.StockRepo
+}
+
+// NewXueQiuCrawler 构造函数
+func NewXueQiuCrawler(stockRepo repository.StockRepo) *xueQiuCrawler {
+	return &xueQiuCrawler{stockRepo: stockRepo}
+}
+
+func (x xueQiuCrawler) UpdateAllStockBaseData() {
 	c := colly.NewCollector()
 
-	/*c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-		fmt.Printf("Link found: %q -> %s\n", e.Text, link)
-		//配置代理
-		c.SetProxyFunc(randomProxySwitcher())
-		//爬取子页
-		_ = c.Visit(e.Request.AbsoluteURL(link))
-	})*/
 	c.OnRequest(func(r *colly.Request) {
 		fmt.Println("Visiting", r.URL)
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-		fmt.Println(r.Body)
 		//配置代理
-		c.SetProxyFunc(randomProxySwitcher())
+		//c.SetProxyFunc(randomProxySwitcher())
 		resp := XueQiuAllDataResp{}
 		json.Unmarshal(r.Body, &resp)
 		total = resp.Data.Count
-		totalPage = total / pageSize
+		totalPage = total / pageSize + 1
 
 		for _, item := range resp.Data.List {
 			stock := entity.Stock{}
 			structAssign(&stock, &item)
-			stockRepo.CreateStock(&stock)
+			x.stockRepo.CreateStock(&stock)
 		}
 
 		if pageNo < totalPage {
@@ -60,8 +68,28 @@ func ExecXueQiuJob(stockRepo repository.StockRepo) error {
 	//爬取根网页
 	baseUrl := fmt.Sprintf(xueQiuAllDataUrl, pageNo, pageSize, time.Now().UnixNano())
 	_ = c.Visit(baseUrl)
+}
+
+func (x xueQiuCrawler) UpdateKLineData(code string) error {
+	c := colly.NewCollector()
+
+	c.OnRequest(func(r *colly.Request) {
+		fmt.Println("Visiting", r.URL)
+	})
+
+	c.OnResponse(func(r *colly.Response) {
+		resp := XueQiuAllDataResp{}
+		json.Unmarshal(r.Body, &resp)
+	})
+
+	//配置代理
+	//c.SetProxyFunc(randomProxySwitcher())
+	//爬取根网页
+	baseUrl := fmt.Sprintf(xuqQiuKLineUrl,"symbol",time.Now().UnixNano(), kLineCount)
+	_ = c.Visit(baseUrl)
 	return nil
 }
+
 
 func RandInt64(min, max int64) int64 {
 	if min >= max || min == 0 || max == 0 {
@@ -129,4 +157,15 @@ type XueQiuAllDataResp struct {
 			LimitupDays        int     `json:"limitup_days"`
 		} `json:"list"`
 	} `json:"data"`
+}
+
+
+type KlineDataResp struct {
+	Data struct {
+		Symbol string `json:"symbol"`
+		Column []string `json:"column"`
+		Item [][]interface{} `json:"item"`
+	} `json:"data"`
+	ErrorCode int `json:"error_code"`
+	ErrorDescription string `json:"error_description"`
 }

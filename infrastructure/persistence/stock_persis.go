@@ -1,8 +1,8 @@
 package persistence
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/yejingxuan/accumulate/domain/entity"
+	"gorm.io/gorm"
 )
 
 type StockPersis struct {

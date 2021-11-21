@@ -22,4 +22,6 @@ require (
 	github.com/temoto/robotstxt v1.1.2 // indirect
 	go.uber.org/zap v1.19.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+	gorm.io/driver/sqlite v1.2.4
+	gorm.io/gorm v1.22.2
 )

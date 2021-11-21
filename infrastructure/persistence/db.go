@@ -1,11 +1,13 @@
 package persistence
 
 import (
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/pkg/errors"
+	"github.com/yejingxuan/accumulate/domain/entity"
 	"github.com/yejingxuan/accumulate/domain/repository"
 	"github.com/yejingxuan/accumulate/infrastructure/config"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -18,15 +20,17 @@ type Repositories struct {
 // NewRepositories 初始化所有域的总仓储实例，将实例通过依赖注入方式，将DB实例注入到领域层
 func NewRepositories() (*Repositories, error) {
 	dbCfg := config.CoreConf.Server.DB
-	d, err := gorm.Open("postgres", dbCfg.Dsn)
+	//d, err := gorm.Open("postgres", dbCfg.Dsn)
+	d, err := gorm.Open(sqlite.Open("data.db"),&gorm.Config{})
 	if err != nil {
 		return nil, errors.Wrap(err, "storage: PostgreSQL connection error")
 	}
+	db, err := d.DB()
+	db.SetMaxOpenConns(dbCfg.MaxConn)
+	db.SetMaxIdleConns(dbCfg.MaxIdle)
+	db.SetConnMaxLifetime(time.Hour)
 
-	d.DB().SetMaxOpenConns(dbCfg.MaxConn)
-	d.DB().SetMaxIdleConns(dbCfg.MaxIdle)
-	d.DB().SetConnMaxLifetime(time.Hour)
-	d.LogMode(dbCfg.LogMode)
+	d.AutoMigrate(&entity.Stock{})
 
 	return &Repositories{
 		db:        d,
@@ -36,5 +40,5 @@ func NewRepositories() (*Repositories, error) {
 
 // closes the database connection
 func (s *Repositories) Close() error {
-	return s.db.Close()
+	return nil
 }
